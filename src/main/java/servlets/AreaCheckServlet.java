@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import java.io.IOException;
 
 @WebServlet("/request/calculate")
 public class AreaCheckServlet extends HttpServlet {
@@ -18,18 +17,33 @@ public class AreaCheckServlet extends HttpServlet {
         try {
             String x = request.getParameter("x");
             String y = request.getParameter("y");
-            String z = request.getParameter("z");
+            String r = request.getParameter("r");
 
-            response.setContentType("text/html;charset=UTF-8");
-            response.getWriter().write(
-                    "<html><body>" +
-                            "<h2>Результаты проверки:</h2>" +
-                            "<p>x = " + x + "</p>" +
-                            "<p>y = " + y + "</p>" +
-                            "<p>z = " + z + "</p>" +
-                            "</body></html>"
-            );
-        } catch (IOException e) {
+            // Простейшая проверка серверной ошибки
+            if (x == null || y == null || r == null || x.isEmpty() || y.isEmpty() || r.isEmpty()) {
+                request.setAttribute("serverError", "Ошибка: какие-то значения не переданы!");
+                request.getRequestDispatcher("/index.jsp").forward(request, response);
+                return;
+            }
+
+            // Пример проверки конкретного значения
+            if (x.equals("2")) { // допустим, сервер считает это ошибкой
+                request.setAttribute("serverError", "Ошибка: x = 2 запрещено на сервере");
+                request.getRequestDispatcher("/index.jsp").forward(request, response);
+                return;
+            }
+
+            // Всё ок, передаем на result.jsp
+            request.setAttribute("x", x);
+            request.setAttribute("y", y);
+            request.setAttribute("r", r);
+            request.setAttribute("hit", true); // сюда ставьте вашу логику попадания
+            request.setAttribute("execTime", 12345); // пример времени
+            request.setAttribute("currentTime", java.time.LocalDateTime.now().toString());
+
+            request.getRequestDispatcher("/result.jsp").forward(request, response);
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

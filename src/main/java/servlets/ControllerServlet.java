@@ -16,8 +16,10 @@ public class ControllerServlet extends HttpServlet {
         try{
             String x = request.getParameter("x");
             String y = request.getParameter("y");
-            String z = request.getParameter("z");
-            if (x != null && y != null && z != null && !x.isEmpty() && !y.isEmpty() && !z.isEmpty()) {
+            String r = request.getParameter("r");
+            System.out.println(x + " " + y + " " + r);
+
+            if (x != null && y != null && r != null && !x.isEmpty() && !y.isEmpty() && !r.isEmpty()) {
                 request.getRequestDispatcher("/request/calculate").forward(request, response);
             }
             else {

@@ -30,61 +30,69 @@
             <table>
                 <tr>
                     <td width="50%">
+                        <!-- X теперь кнопки -->
                         <div class="form-row" style="position: relative;">
                             <span class="form-label">X:</span>
-                            <input type="radio" name="x" value="-2" id="x-2"> <label for="x-2">-2</label>
-                            <input type="radio" name="x" value="-1.5" id="x-1.5"> <label for="x-1.5">-1.5</label>
-                            <input type="radio" name="x" value="-1" id="x-1"> <label for="x-1">-1</label>
-                            <input type="radio" name="x" value="-0.5" id="x-0.5"> <label for="x-0.5">-0.5</label>
-                            <input type="radio" name="x" value="0" id="x0"> <label for="x0">0</label>
-                            <input type="radio" name="x" value="0.5" id="x0.5"> <label for="x0.5">0.5</label>
-                            <input type="radio" name="x" value="1" id="x1"> <label for="x1">1</label>
-                            <input type="radio" name="x" value="1.5" id="x1.5"> <label for="x1.5">1.5</label>
-                            <input type="radio" name="x" value="2" id="x2"> <label for="x2">2</label>
+                            <input type="button" name="x" value="-5" class="x-button">
+                            <input type="button" name="x" value="-4" class="x-button">
+                            <input type="button" name="x" value="-3" class="x-button">
+                            <input type="button" name="x" value="-2" class="x-button">
+                            <input type="button" name="x" value="-1" class="x-button">
+                            <input type="button" name="x" value="0" class="x-button">
+                            <input type="button" name="x" value="1" class="x-button">
+                            <input type="button" name="x" value="2" class="x-button">
+                            <input type="button" name="x" value="3" class="x-button">
+                            <input type="hidden" name="x" id="xInput">
                             <span id="errorX" class="error-tooltip"></span>
                         </div>
 
+                        <!-- Y без изменений -->
                         <div class="form-row" style="position: relative;">
                             <span class="form-label">Y:</span>
                             <input type="text" name="y" placeholder="Введите Y (-5...5)" style="width: 150px;">
                             <span id="errorY" class="error-tooltip"></span>
                         </div>
 
+                        <!-- R теперь радио -->
                         <div class="form-row" style="position: relative;">
                             <span class="form-label">R:</span>
-                            <input type="button" name="r" value="1" class="r-button">
-                            <input type="button" name="r" value="2" class="r-button">
-                            <input type="button" name="r" value="3" class="r-button">
-                            <input type="button" name="r" value="4" class="r-button">
-                            <input type="button" name="r" value="5" class="r-button">
-                            <input type="hidden" name="r" id="rInput">
+                            <input type="radio" name="r" value="1" id="r1"> <label for="r1">1</label>
+                            <input type="radio" name="r" value="2" id="r2"> <label for="r2">2</label>
+                            <input type="radio" name="r" value="3" id="r3"> <label for="r3">3</label>
+                            <input type="radio" name="r" value="4" id="r4"> <label for="r4">4</label>
+                            <input type="radio" name="r" value="5" id="r5"> <label for="r5">5</label>
                             <span id="errorR" class="error-tooltip"></span>
                         </div>
 
                         <div class="form-row" style="position: relative;">
                             <button id="submitBtn" type="submit">Отправить</button>
-                            <div id="serverError" class="server-error-tooltip">
-                                <% if (request.getAttribute("serverError") != null) { %>
-                                <script>
-                                    const serverError = document.getElementById("serverError");
-                                    serverError.textContent = "<%= request.getAttribute("serverError") %>";
-                                    serverError.classList.add("visible");
-                                </script>
-                                <% } %>
-                            </div>
+                            <div id="serverError" class="server-error-tooltip"></div>
+
+                            <% if (request.getAttribute("serverError") != null) { %>
+                            <script>
+                                const serverError = document.getElementById("serverError");
+
+                                let errorText = `<%= request.getAttribute("serverError").toString().replace("\n", "\\n") %>`;
+                                errorText = errorText.replace(/\\n+$/, ""); // убираем лишние переносы в конце
+                                errorText = errorText.replace(/\\n/g, "<br>"); // заменяем перенос на HTML <br>
+                                serverError.innerHTML = errorText; // innerHTML нужен, чтобы <br> работал
+                                serverError.classList.add("visible");
+                            </script>
+                            <% } %>
 
                         </div>
                     </td>
+
                     <td width="50%">
                         <div class="graph-container">
                             <canvas id="graphCanvas" width="400" height="400"></canvas>
                         </div>
                     </td>
-
                 </tr>
             </table>
         </form>
     </section>
+
 
     <section class="results_section">
         <table id="resultsTable">

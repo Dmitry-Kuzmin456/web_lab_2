@@ -1,4 +1,4 @@
-package servlets;
+package server.servlets;
 
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -17,9 +17,11 @@ public class ControllerServlet extends HttpServlet {
             String x = request.getParameter("x");
             String y = request.getParameter("y");
             String r = request.getParameter("r");
+            String action = request.getParameter("action");
             System.out.println(x + " " + y + " " + r);
 
             if (x != null && y != null && r != null && !x.isEmpty() && !y.isEmpty() && !r.isEmpty()) {
+
                 request.getRequestDispatcher("/request/calculate").forward(request, response);
             }
             else {

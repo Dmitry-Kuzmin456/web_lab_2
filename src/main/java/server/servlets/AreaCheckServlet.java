@@ -1,9 +1,10 @@
-package servlets;
+package server.servlets;
 
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import server.Params;
 
 
 @WebServlet("/request/calculate")
@@ -19,16 +20,10 @@ public class AreaCheckServlet extends HttpServlet {
             String y = request.getParameter("y");
             String r = request.getParameter("r");
 
-            // Простейшая проверка серверной ошибки
-            if (x == null || y == null || r == null || x.isEmpty() || y.isEmpty() || r.isEmpty()) {
-                request.setAttribute("serverError", "Ошибка: какие-то значения не переданы!");
-                request.getRequestDispatcher("/index.jsp").forward(request, response);
-                return;
-            }
+            Params params = new Params(x, y, r);
 
-            // Пример проверки конкретного значения
-            if (x.equals("2")) { // допустим, сервер считает это ошибкой
-                request.setAttribute("serverError", "Ошибка: x = 2 запрещено на сервере");
+            if (params.hasErrors()) {
+                request.setAttribute("serverError", params.getErrors());
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
                 return;
             }

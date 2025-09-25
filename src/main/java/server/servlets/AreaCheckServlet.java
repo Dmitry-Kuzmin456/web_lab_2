@@ -5,10 +5,14 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import server.Params;
+import server.Result;
+import server.ResultsBean;
 
+import java.math.BigDecimal;
 
 @WebServlet("/request/calculate")
 public class AreaCheckServlet extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) {
         requestHandler(request, response);
@@ -19,27 +23,88 @@ public class AreaCheckServlet extends HttpServlet {
             String x = request.getParameter("x");
             String y = request.getParameter("y");
             String r = request.getParameter("r");
-
-            Params params = new Params(x, y, r);
-
-            if (params.hasErrors()) {
-                request.setAttribute("serverError", params.getErrors());
-                request.getRequestDispatcher("/index.jsp").forward(request, response);
-                return;
+            String action = request.getParameter("action");
+            if ("click".equals(action)){
+                this.clickRequest(x, y, r, request, response);
+            } else{
+                this.request(x, y, r, request, response);
             }
 
-            // Всё ок, передаем на result.jsp
-            request.setAttribute("x", x);
-            request.setAttribute("y", y);
-            request.setAttribute("r", r);
-            request.setAttribute("hit", true); // сюда ставьте вашу логику попадания
-            request.setAttribute("execTime", 12345); // пример времени
-            request.setAttribute("currentTime", java.time.LocalDateTime.now().toString());
 
-            request.getRequestDispatcher("/result.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void request(String x, String y, String r, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Params params = new Params(x, y, r);
+
+        if (params.hasErrors()) {
+            request.setAttribute("serverError", params.getErrors());
+            request.getRequestDispatcher("/index.jsp").forward(request, response);
+            return;
+        }
+
+        long start = System.nanoTime();
+
+        boolean hit = this.checkRequestHit(params.getX(), params.getY(), params.getR());
+        long execTime = System.nanoTime() - start;
+        String currentTime = java.time.LocalDateTime.now().toString();
+
+        Result result = new Result(params.getX(), y, params.getR(), hit, execTime, currentTime);
+
+        ResultsBean resultsBean = (ResultsBean) request.getSession().getAttribute("resultsBean");
+        if (resultsBean == null) {
+            resultsBean = new ResultsBean();
+            request.getSession().setAttribute("resultsBean", resultsBean);
+        }
+
+        resultsBean.addResult(result);
+
+        request.setAttribute("result", result);
+
+        request.getRequestDispatcher("/result.jsp").forward(request, response);
+    }
+
+    private void clickRequest(String sx, String sy, String sr, HttpServletRequest request, HttpServletResponse response) throws Exception{
+        try {
+            double x = Double.parseDouble(sx);
+            double y = Double.parseDouble(sy);
+            byte r = Byte.parseByte(sr);
+            boolean hit = checkHit(x, y, r);
+            response.setContentType("application/json");
+            response.getWriter().write(String.format("{\"x\":%s,\"y\":%s,\"hit\":%s}", x, y, hit));
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(400, "Некорректные координаты");
+        }
+    }
+
+    private boolean checkRequestHit(byte x, BigDecimal y, byte r) {
+        double xx = x / r;
+        double yy = y.doubleValue() / r;
+        return checkHit(xx, yy, r);
+    }
+
+    private <T extends Number> boolean checkHit(T xx, T yy, T rr) {
+        double x = xx.doubleValue();
+        double y = yy.doubleValue();
+        double absX = Math.abs(x);
+
+        // верхняя граница
+        double upperY = 0;
+        if (absX < 0.5) upperY = 2.25;
+        else if (absX < 0.75) upperY = 3 * absX + 0.75;
+        else if (absX < 1) upperY = 9 - 8 * absX;
+        else if (absX <= 3) upperY = 1.5 - 0.5 * absX - (6 * Math.sqrt(10) / 14) * (Math.sqrt(3 - x*x + 2 * absX) - 2);
+        else if (absX <= 7) upperY = 3 * Math.sqrt(1 - Math.pow(x / 7, 2));
+
+        // нижняя граница
+        double lowerY = 0;
+        if (absX > 4) lowerY = -3 * Math.sqrt(1 - Math.pow(x / 7, 2));
+        else if (absX <= 4) lowerY = Math.abs(x / 2) - (3 * Math.sqrt(33) - 7) / 112 * x * x - 3 + Math.sqrt(1 - Math.pow(Math.abs(absX - 2) - 1, 2));
+
+        return y >= lowerY && y <= upperY;
     }
 }

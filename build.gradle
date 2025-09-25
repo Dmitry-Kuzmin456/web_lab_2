@@ -11,8 +11,15 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'jakarta.servlet:jakarta.servlet-api:6.0.0'
+    // Jakarta EE 10 API (provided, т.к. Tomcat его содержит)
+    providedCompile 'jakarta.platform:jakarta.jakartaee-api:10.0.0'
+
+    // JSTL для работы с тегами <c:forEach>, <c:if> и др.
+    implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl:3.0.0'
 }
+
+
+
 
 war {
     archiveFileName = "laba-hayp.war"

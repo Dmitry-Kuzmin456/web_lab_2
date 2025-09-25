@@ -75,6 +75,7 @@ public class Params {
         result.put("r", errors.getOrDefault("r", "ok"));
 
         StringBuilder res = new StringBuilder();
+        res.append("server errors!").append("\n");
         if (!(result.get("x").equals("ok"))) {
             res.append("x: ").append(result.get("x")).append("\n");
         }
@@ -87,7 +88,7 @@ public class Params {
         return res.toString();
     }
 
-    public float getX() { return x; }
+    public byte getX() { return x; }
     public BigDecimal getY() { return y; }
     public byte getR() { return r; }
 }

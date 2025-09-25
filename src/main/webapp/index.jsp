@@ -6,6 +6,9 @@
     <meta charset="UTF-8">
     <title>Web_lab_1</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/main.css">
+    <script>
+        const contextPath = '<%= request.getContextPath() %>';
+    </script>
     <script defer src="${pageContext.request.contextPath}/script.js"></script>
 </head>
 <body>
@@ -30,7 +33,6 @@
             <table>
                 <tr>
                     <td width="50%">
-                        <!-- X теперь кнопки -->
                         <div class="form-row" style="position: relative;">
                             <span class="form-label">X:</span>
                             <input type="button" name="x" value="-5" class="x-button">
@@ -46,14 +48,12 @@
                             <span id="errorX" class="error-tooltip"></span>
                         </div>
 
-                        <!-- Y без изменений -->
                         <div class="form-row" style="position: relative;">
                             <span class="form-label">Y:</span>
                             <input type="text" name="y" placeholder="Введите Y (-5...5)" style="width: 150px;">
                             <span id="errorY" class="error-tooltip"></span>
                         </div>
 
-                        <!-- R теперь радио -->
                         <div class="form-row" style="position: relative;">
                             <span class="form-label">R:</span>
                             <input type="radio" name="r" value="1" id="r1"> <label for="r1">1</label>
@@ -73,9 +73,9 @@
                                 const serverError = document.getElementById("serverError");
 
                                 let errorText = `<%= request.getAttribute("serverError").toString().replace("\n", "\\n") %>`;
-                                errorText = errorText.replace(/\\n+$/, ""); // убираем лишние переносы в конце
-                                errorText = errorText.replace(/\\n/g, "<br>"); // заменяем перенос на HTML <br>
-                                serverError.innerHTML = errorText; // innerHTML нужен, чтобы <br> работал
+                                errorText = errorText.replace(/\\n+$/, "");
+                                errorText = errorText.replace(/\\n/g, "<br>");
+                                serverError.innerHTML = errorText;
                                 serverError.classList.add("visible");
                             </script>
                             <% } %>
@@ -107,8 +107,25 @@
             </tr>
             </thead>
             <tbody>
-            <!-- сюда будет добавляться история -->
+            <%
+                server.ResultsBean resultsBean = (server.ResultsBean) session.getAttribute("resultsBean");
+                if (resultsBean != null) {
+                    for (server.Result res : resultsBean.getResults()) {
+            %>
+            <tr>
+                <td><%= res.getX() %></td>
+                <td><%= res.getY() %></td>
+                <td><%= res.getR() %></td>
+                <td><%= res.isHit() ? "Попал" : "Мимо" %></td>
+                <td><%= res.getExecTime() %></td>
+                <td><%= res.getCurrentTime() %></td>
+            </tr>
+            <%
+                    }
+                }
+            %>
             </tbody>
+
         </table>
     </section>
 </main>

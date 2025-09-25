@@ -1,26 +1,33 @@
-// ===== Обработка кнопок X =====
-const xButtons = document.querySelectorAll('input[name="x"]');
-let selectedX = null;
+const canvas = document.getElementById('graphCanvas');
+const ctx = canvas.getContext('2d');
+const size = 400;
+const padding = 40;
+const scale = (size - 2 * padding) / 14;
 
+let selectedX = null;
+let selectedR = null;
+
+// Обработка кнопок X
+const xButtons = document.querySelectorAll('input[name="x"]');
 xButtons.forEach(button => {
     button.addEventListener('click', () => {
         xButtons.forEach(b => b.classList.remove('active'));
         button.classList.add('active');
         selectedX = Number(button.value);
-
-        // Записываем в скрытое поле X
         document.getElementById("xInput").value = selectedX;
     });
 });
 
-// ===== Рисование графика =====
-function drawGraphWithZones() {
-    const canvas = document.getElementById('graphCanvas');
-    const ctx = canvas.getContext('2d');
-    const size = 400;
-    const padding = 40;
-    const scale = (size - 2 * padding) / 14;
+// Обработка радиуса R
+const rRadios = document.querySelectorAll('input[name="r"]');
+rRadios.forEach(radio => {
+    radio.addEventListener('change', () => {
+        selectedR = Number(radio.value);
+    });
+});
 
+
+function drawGraphWithZones() {
     ctx.clearRect(0, 0, size, size);
     ctx.fillStyle = '#fff';
     ctx.fillRect(0, 0, size, size);
@@ -105,7 +112,7 @@ function drawGraphWithZones() {
     ctx.fill();
 }
 
-// ===== Валидация формы =====
+
 document.getElementById("pointForm").addEventListener("submit", (e) => {
     e.preventDefault();
 
@@ -134,7 +141,7 @@ document.getElementById("pointForm").addEventListener("submit", (e) => {
         hasError = true;
     }
 
-    if (!y || !/^[-+]?\d+(\.\d+)?$/.test(y) || Number(y) <= -5 || Number(y) >= 5) {
+    if (!y || !/^[-+]?[0-4]+(\.\d+)?$/.test(y)) {
         errorY.textContent = "Введите корректное число Y (-5...5)";
         errorY.style.display = "inline-block";
         hasError = true;
@@ -150,6 +157,46 @@ document.getElementById("pointForm").addEventListener("submit", (e) => {
 
     e.target.submit();
 });
+
+
+canvas.addEventListener('click', (e) => {
+    const selectedR = document.querySelector('input[name="r"]:checked')?.value;
+    if (!selectedR) {
+        alert("Невозможно определить координаты точки, выберите R");
+        return;
+    }
+
+    const rect = canvas.getBoundingClientRect();
+    const canvasX = e.clientX - rect.left;
+    const canvasY = e.clientY - rect.top;
+
+    const graphX = (canvasX - size/2) / scale;
+    const graphY = (size/2 - canvasY) / scale;
+
+    const url = `${contextPath}/request?action=click&x=${graphX}&y=${graphY}&r=${selectedR}`;
+
+
+
+
+    fetch(url)
+        .then(res => res.json())
+        .then(data => {
+            drawGraphWithZones();
+            drawPoint(data.x, data.y, data.hit);
+        })
+        .catch(err => console.error(err));
+});
+
+
+function drawPoint(x, y, hit) {
+    ctx.fillStyle = hit ? 'green' : 'red';
+    const px = size/2 + x*scale;
+    const py = size/2 - y*scale;
+    ctx.beginPath();
+    ctx.arc(px, py, 4, 0, 2*Math.PI);
+    ctx.fill();
+}
+
 
 window.addEventListener('load', () => {
     drawGraphWithZones();

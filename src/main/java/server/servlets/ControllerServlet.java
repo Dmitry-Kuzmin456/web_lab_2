@@ -4,6 +4,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import server.Result;
 
 @WebServlet("/request")
 public class ControllerServlet extends HttpServlet {
@@ -14,22 +15,22 @@ public class ControllerServlet extends HttpServlet {
 
     private void requestHandler(HttpServletRequest request, HttpServletResponse response){
         try{
-            String x = request.getParameter("x");
-            String y = request.getParameter("y");
-            String r = request.getParameter("r");
-            String action = request.getParameter("action");
-            System.out.println(x + " " + y + " " + r);
+            String xStr = request.getParameter("x");
+            String yStr = request.getParameter("y");
+            String rStr = request.getParameter("r");
 
-            if (x != null && y != null && r != null && !x.isEmpty() && !y.isEmpty() && !r.isEmpty()) {
 
+            if (xStr != null && yStr != null && rStr != null &&
+                    !xStr.isEmpty() && !yStr.isEmpty() && !rStr.isEmpty()) {
                 request.getRequestDispatcher("/request/calculate").forward(request, response);
-            }
-            else {
+            } else {
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
             }
-        } catch (Exception e){
-            System.out.println(e.getMessage());
-        }
 
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
+
+
 }

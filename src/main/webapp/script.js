@@ -112,6 +112,18 @@ function drawGraphWithZones() {
     ctx.fill();
 }
 
+function showError(el, message, timeout = 3000) {
+    el.textContent = message;
+    el.style.display = "inline-block";
+    el.classList.add("visible");
+
+    setTimeout(() => {
+        el.textContent = "";
+        el.style.display = "none";
+        el.classList.remove("visible");
+    }, timeout);
+}
+
 
 document.getElementById("pointForm").addEventListener("submit", (e) => {
     e.preventDefault();
@@ -136,20 +148,17 @@ document.getElementById("pointForm").addEventListener("submit", (e) => {
     let hasError = false;
 
     if (selectedX === null || selectedX === undefined) {
-        errorX.textContent = "Выберите X";
-        errorX.style.display = "inline-block";
+        showError(errorX, "Выберите X");
         hasError = true;
     }
 
     if (!y || !/^[-+]?[0-4]+(\.\d+)?$/.test(y)) {
-        errorY.textContent = "Введите корректное число Y (-5...5)";
-        errorY.style.display = "inline-block";
+        showError(errorY, "Введите корректное число Y (-5...5)");
         hasError = true;
     }
 
     if (!r) {
-        errorR.textContent = "Выберите R";
-        errorR.style.display = "inline-block";
+        showError(errorR, "Выберите R");
         hasError = true;
     }
 
@@ -162,9 +171,16 @@ document.getElementById("pointForm").addEventListener("submit", (e) => {
 canvas.addEventListener('click', (e) => {
     const selectedR = document.querySelector('input[name="r"]:checked')?.value;
     if (!selectedR) {
-        alert("Невозможно определить координаты точки, выберите R");
+        const graphError = document.getElementById("graphError");
+        graphError.textContent = "Выберите R перед кликом по графику";
+        graphError.classList.add("visible");
+
+        setTimeout(() => {
+            graphError.classList.remove("visible");
+        }, 3000);
         return;
     }
+
 
     const rect = canvas.getBoundingClientRect();
     const canvasX = e.clientX - rect.left;

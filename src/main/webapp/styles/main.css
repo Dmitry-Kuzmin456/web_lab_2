@@ -203,4 +203,26 @@ input[name='y'] {
     pointer-events: auto;
 }
 
+#graphError {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 250px;
+    background: #ff4d4d;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 100;
+}
+
+#graphError.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
 

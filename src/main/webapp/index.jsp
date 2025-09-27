@@ -1,4 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -84,9 +85,11 @@
                     </td>
 
                     <td width="50%">
-                        <div class="graph-container">
+                        <div class="graph-container" style="position: relative;">
                             <canvas id="graphCanvas" width="400" height="400"></canvas>
+                            <div id="graphError" class="server-error-tooltip"></div>
                         </div>
+
                     </td>
                 </tr>
             </table>
@@ -107,24 +110,18 @@
             </tr>
             </thead>
             <tbody>
-            <%
-                server.ResultsBean resultsBean = (server.ResultsBean) session.getAttribute("resultsBean");
-                if (resultsBean != null) {
-                    for (server.Result res : resultsBean.getResults()) {
-            %>
-            <tr>
-                <td><%= res.getX() %></td>
-                <td><%= res.getY() %></td>
-                <td><%= res.getR() %></td>
-                <td><%= res.isHit() ? "Попал" : "Мимо" %></td>
-                <td><%= res.getExecTime() %></td>
-                <td><%= res.getCurrentTime() %></td>
-            </tr>
-            <%
-                    }
-                }
-            %>
+            <c:forEach var="res" items="#{resultsBean.results}">
+                <tr>
+                    <td>${res.x}</td>
+                    <td>${res.y}</td>
+                    <td>${res.r}</td>
+                    <td>${res.hit ? 'Попал' : 'Мимо'}</td>
+                    <td>${res.execTime}</td>
+                    <td>${res.currentTime}</td>
+                </tr>
+            </c:forEach>
             </tbody>
+
 
         </table>
     </section>

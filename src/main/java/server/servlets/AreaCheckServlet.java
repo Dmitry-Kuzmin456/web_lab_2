@@ -1,5 +1,6 @@
 package server.servlets;
 
+import javax.inject.Inject;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -12,6 +13,9 @@ import java.math.BigDecimal;
 
 @WebServlet("/request/calculate")
 public class AreaCheckServlet extends HttpServlet {
+
+    @Inject
+    private ResultsBean resultsBean;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) {
@@ -53,12 +57,6 @@ public class AreaCheckServlet extends HttpServlet {
         String currentTime = java.time.LocalDateTime.now().toString();
 
         Result result = new Result(params.getX(), y, params.getR(), hit, execTime, currentTime);
-
-        ResultsBean resultsBean = (ResultsBean) request.getSession().getAttribute("resultsBean");
-        if (resultsBean == null) {
-            resultsBean = new ResultsBean();
-            request.getSession().setAttribute("resultsBean", resultsBean);
-        }
 
         resultsBean.addResult(result);
 

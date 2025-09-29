@@ -5,14 +5,19 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import server.AppLogger;
 import server.Params;
 import server.Result;
 import server.ResultsBean;
 
 import java.math.BigDecimal;
+import java.util.logging.Logger;
+
 
 @WebServlet("/request/calculate")
 public class AreaCheckServlet extends HttpServlet {
+    private static final Logger logger = AppLogger.getLogger(AreaCheckServlet.class);
 
     @Inject
     private ResultsBean resultsBean;
@@ -37,6 +42,7 @@ public class AreaCheckServlet extends HttpServlet {
 
 
         } catch (Exception e) {
+            logger.info("error: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -46,6 +52,7 @@ public class AreaCheckServlet extends HttpServlet {
 
         if (params.hasErrors()) {
             request.setAttribute("serverError", params.getErrors());
+            logger.info("error: " + params.getErrors());
             request.getRequestDispatcher("/index.jsp").forward(request, response);
             return;
         }
@@ -61,6 +68,8 @@ public class AreaCheckServlet extends HttpServlet {
         resultsBean.addResult(result);
 
         request.setAttribute("result", result);
+
+        logger.info("result: " + result.toJson());
 
         request.getRequestDispatcher("/result.jsp").forward(request, response);
     }

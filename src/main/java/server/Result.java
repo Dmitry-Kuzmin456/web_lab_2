@@ -23,4 +23,9 @@ public class Result {
     public boolean isHit() { return hit; }
     public long getExecTime() { return execTime; }
     public String getCurrentTime() { return currentTime; }
+
+    public String toJson() {
+        return String.format("{\"x\":%s,\"y\":%s,\"r\":%s,\"hit\":%s,\"time\":\"%s\",\"execTime\":%d}",
+                this.x, this.y, this.r, this.hit, this.currentTime, this.execTime);
+    }
 }

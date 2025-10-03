@@ -61,7 +61,7 @@ public class AreaCheckServlet extends HttpServlet {
 
         boolean hit = this.checkRequestHit(params.getX(), params.getY(), params.getR());
         long execTime = System.nanoTime() - start;
-        String currentTime = java.time.LocalDateTime.now().toString();
+        String currentTime = java.time.ZonedDateTime.now(java.time.ZoneId.of("Europe/Moscow")).toString();
 
         Result result = new Result(params.getX(), y, params.getR(), hit, execTime, currentTime);
 

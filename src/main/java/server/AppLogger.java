@@ -7,10 +7,11 @@ import java.util.logging.Level;
 
 public class AppLogger {
 
-    private static final String LOG_FILE_PATH = "C:\\Users\\Dmitry\\IdeaProjects\\web_lab_2\\logs\\app.log";
+    // private static final String LOG_FILE_PATH = "C:\\Users\\Dmitry\\IdeaProjects\\web_lab_2\\logs\\app.log";
+    private static final String LOG_FILE_PATH = "/Users/dmitry/IdeaProjects/web_lab_2/logs/app.log";
 
-    public static Logger getLogger(Class<?> clazz) {
-        Logger logger = Logger.getLogger(clazz.getName());
+    public static Logger getLogger(Class<?> my_class) {
+        Logger logger = Logger.getLogger(my_class.getName());
 
 
         if (logger.getHandlers().length == 0) {
